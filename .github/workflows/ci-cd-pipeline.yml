@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Change this to match your branch name, e.g., 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code from the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Node.js (specify the version you want to use)
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'  # Or another version that you are using
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Run tests (assuming you have tests defined in package.json)
+      - name: Run tests
+        run: npm test
+
+      # Build Docker image
+      - name: Build Docker image
+        run: docker build -t nodejs-ci-cd .
+
+      # Push Docker image to DockerHub (optional step)
+      - name: Push Docker image to DockerHub
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push nodejs-ci-cd
+
+      # Deploy to Kubernetes (optional, if you have Kubernetes setup)
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
