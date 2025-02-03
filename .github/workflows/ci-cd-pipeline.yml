@@ -37,5 +37,4 @@ jobs:
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-        run: docker push anirudhnallala/nodejs-ci-cd:latest
 
