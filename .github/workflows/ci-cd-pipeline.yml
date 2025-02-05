@@ -81,4 +81,7 @@ jobs:
       - name: Test Application Response
         run: curl -v http://localhost:9090
 
+      - name: Check Running Services
+        run: kubectl get services -o wide
+
 
