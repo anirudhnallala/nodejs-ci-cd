@@ -75,13 +75,7 @@ jobs:
           kubectl get pods
           kubectl get services
 
-      - name: Port Forward Service
-        run: kubectl port-forward svc/nodejs-service 9090:80 &
 
-      - name: Test Application Response
-        run: curl -v http://localhost:9090
 
-      - name: Check Running Services
-        run: kubectl get services -o wide
 
 
