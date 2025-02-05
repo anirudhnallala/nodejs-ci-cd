@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: nodejs-app
-          image: nodejs-ci-cd:latest
+          image: anirudhnallala/nodejs-ci-cd:latest
           ports:
             - containerPort: 3000
 

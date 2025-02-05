@@ -37,3 +37,20 @@ jobs:
           echo "Pushing Docker image to DockerHub"
           docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-ci-cd:latest
 
+      # Kubernetes Deployment Section
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          kubectl-version: 'v1.21.2'
+
+      - name: Configure Kubernetes Cluster Access
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
+          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl rollout status deployment/nodejs-app  # Wait for deployment to complete
+
