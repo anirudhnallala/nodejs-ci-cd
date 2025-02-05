@@ -38,19 +38,39 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-ci-cd:latest
 
       # Kubernetes Deployment Section
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Minikube
+        run: |
+          curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          chmod +x minikube
+          sudo mv minikube /usr/local/bin/
+          minikube start --driver=docker
+          echo "Minikube started!"
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v1
         with:
-          version: 'v1.21.2'
+          version: 'latest'
 
-      - name: Configure Kubernetes Cluster Access
+      - name: Configure kubectl for Minikube
         run: |
-          echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
-          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+          minikube update-context
+          kubectl cluster-info
+          echo "Kubeconfig updated!"
 
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/deployment.yml
           kubectl apply -f k8s/service.yml
-          kubectl rollout status deployment/nodejs-app  # Wait for deployment to complete
 
+      - name: Verify Deployment
+        run: |
+          kubectl get pods
+          kubectl get services
